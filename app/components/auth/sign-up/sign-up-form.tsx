@@ -9,31 +9,30 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-
-import { Link, useLocation } from "react-router";
 import { type SubmitHandler, useForm } from "react-hook-form";
+import { type SignUpInputData, signUpSchema } from "@/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { type LoginInput, loginSchema, type SignUpInputData } from "@/lib/auth";
-import { useLogin } from "@/api/hooks/auth";
+import { useSignUpMutation } from "@/api/hooks/auth";
+import React from "react";
 
-export function LoginForm({
+export function SignUpForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const location = useLocation();
-
-  const { register, handleSubmit } = useForm({
-    resolver: zodResolver(loginSchema),
+  const { handleSubmit, register } = useForm<SignUpInputData>({
+    resolver: zodResolver(signUpSchema),
     defaultValues: {
-      credential: location?.state?.email ?? "",
+      email: "",
       password: "",
+      firstname: "John",
+      lastname: "Doe",
     },
   });
 
-  const login = useLogin();
+  const signUp = useSignUpMutation();
 
-  const onSubmit: SubmitHandler<LoginInput> = (data) => {
-    login.mutate(data);
+  const onSubmit: SubmitHandler<SignUpInputData> = (data) => {
+    signUp.mutate(data);
   };
 
   return (
@@ -43,44 +42,63 @@ export function LoginForm({
           <form onSubmit={handleSubmit(onSubmit)} className="p-6 md:p-8">
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
-                <h1 className="text-2xl font-bold">Welcome back</h1>
+                <h1 className="text-2xl font-bold">Create an account</h1>
                 <p className="text-balance text-muted-foreground">
-                  Login to your Acme Inc account
+                  Sign up for Acme Inc
                 </p>
               </div>
+
+              {/* Name Field - New for Sign Up */}
+              <Field>
+                <FieldLabel htmlFor="first_name">First Name</FieldLabel>
+                <Input
+                  id="first_name"
+                  type="text"
+                  placeholder="John"
+                  {...register("firstname")}
+                  required
+                />
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="last_name">Last Name</FieldLabel>
+                <Input
+                  id="last_name"
+                  type="text"
+                  placeholder="Doe"
+                  {...register("lastname")}
+                />
+              </Field>
+
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
                   id="email"
                   type="email"
                   placeholder="m@example.com"
-                  {...register("credential")}
-                  required
+                  {...register("email")}
                 />
               </Field>
+
               <Field>
-                <div className="flex items-center">
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <a
-                    href="#"
-                    className="ml-auto text-sm underline-offset-2 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
-                </div>
+                <FieldLabel htmlFor="password">Password</FieldLabel>
                 <Input
                   id="password"
                   type="password"
                   {...register("password")}
-                  required
                 />
               </Field>
+
               <Field>
-                <Button type="submit">Login</Button>
+                <Button type="submit" className="w-full">
+                  Create account
+                </Button>
               </Field>
+
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                 Or continue with
               </FieldSeparator>
+
               <Field className="grid grid-cols-3 gap-4">
                 <Button variant="outline" type="button">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -89,7 +107,7 @@ export function LoginForm({
                       fill="currentColor"
                     />
                   </svg>
-                  <span className="sr-only">Login with Apple</span>
+                  <span className="sr-only">Sign up with Apple</span>
                 </Button>
                 <Button variant="outline" type="button">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -98,7 +116,7 @@ export function LoginForm({
                       fill="currentColor"
                     />
                   </svg>
-                  <span className="sr-only">Login with Google</span>
+                  <span className="sr-only">Sign up with Google</span>
                 </Button>
                 <Button variant="outline" type="button">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -107,14 +125,16 @@ export function LoginForm({
                       fill="currentColor"
                     />
                   </svg>
-                  <span className="sr-only">Login with Meta</span>
+                  <span className="sr-only">Sign up with Meta</span>
                 </Button>
               </Field>
+
               <FieldDescription className="text-center">
-                Don&apos;t have an account? <Link to="/register">Sign up</Link>
+                Already have an account? <a href="#">Sign in</a>
               </FieldDescription>
             </FieldGroup>
           </form>
+
           <div className="relative hidden bg-muted md:block">
             <img
               src="/placeholder.svg"
@@ -124,6 +144,7 @@ export function LoginForm({
           </div>
         </CardContent>
       </Card>
+
       <FieldDescription className="px-6 text-center">
         By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
         and <a href="#">Privacy Policy</a>.
