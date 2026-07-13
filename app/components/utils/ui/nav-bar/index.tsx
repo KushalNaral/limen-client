@@ -58,16 +58,27 @@ export function NavMenu() {
   return (
     <NavigationMenu className="">
       <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Home</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="">
-              <ListItem href="/docs" title="Api Docs">
-                API Documentation
-              </ListItem>
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
+        <div className=" flex justify-between" style={{ width: "100%" }}>
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>
+              <Link to="/">Home</Link>
+            </NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="">
+                <ListItem href="/docs" title="Api Docs">
+                  API Documentation
+                </ListItem>
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+
+          <NavigationMenuItem>
+            <NavigationMenuLink
+              className={navigationMenuTriggerStyle()}
+              render={<Link to="/login">Login</Link>}
+            />
+          </NavigationMenuItem>
+        </div>
       </NavigationMenuList>
     </NavigationMenu>
   );
