@@ -19,3 +19,5 @@ export default function Provider({ children }: { children: React.ReactNode }) {
     </QueryClientProvider>
   );
 }
+
+export { queryClient };

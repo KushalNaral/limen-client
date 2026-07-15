@@ -13,5 +13,9 @@ export default [
   layout("layouts/auth/NonAuthLayout.tsx", [
     route("/login", "./pages/auth/login.tsx"),
     route("/register", "./pages/auth/sign-up.tsx"),
+    route("/verify-email", "./pages/auth/verify-email.tsx"),
+  ]),
+  layout("layouts/auth/DefaultLayout.tsx", [
+    route("/dashboard", "./pages/dashboard/index.tsx"),
   ]),
 ] satisfies RouteConfig;
