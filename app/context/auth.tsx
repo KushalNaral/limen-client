@@ -1,20 +1,40 @@
-import { createContext, type ReactNode } from "react";
+import { createContext, useContext, useSyncExternalStore, type ReactNode } from "react";
 import type { User } from "limen-auth";
-import { keys, useProfile } from "@/api/hooks/auth";
-import { queryClient } from "@/api/query-client/provider";
+import { auth } from "@/lib/auth";
 
-const AuthContext = createContext<User>({} as User);
+interface AuthContextValue {
+  user: User | undefined;
+  isProfileLoading: boolean;
+  isAuthenticated: boolean;
+  isEmailVerified: boolean;
+}
+
+const AuthContext = createContext<AuthContextValue>({} as AuthContextValue);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const { data, isPending, isError } = useProfile();
-
-  const loginSuccess = (newUser: User) => {
-    queryClient.setQueryData(keys.profile, newUser);
-  };
+  const sessionState = useSyncExternalStore(
+    auth.$session.subscribe,
+    auth.$session.get,
+    auth.$session.get,
+  );
+  const user = sessionState.data?.user as User | undefined;
 
   return (
-    <>
-      <div></div>
-    </>
+    <AuthContext.Provider
+      value={{
+        user,
+        isProfileLoading: sessionState.isPending,
+        isAuthenticated: !!user,
+        isEmailVerified: !!user?.emailVerifiedAt,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
   );
 }
+
+export function useAuthContext() {
+  return useContext(AuthContext);
+}
+
+

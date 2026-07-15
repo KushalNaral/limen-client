@@ -21,6 +21,7 @@ export class ApiClient {
 
     const response = await fetch(`${this.baseUrl}${path}`, {
       method: config.method ?? "GET",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         ...(token && { Authorization: `Bearer ${token}` }),

@@ -1,9 +1,13 @@
-import Header from "@/components/utils/ui/header";
-import Footer from "@/components/utils/ui/footer";
 import { Navigate, Outlet } from "react-router";
 import { useAuth } from "@/api/hooks/auth/use-auth";
 
-export default function Layout() {
+/**
+ * Guard layout for the /verify-email route.
+ * Requires: authenticated, but email NOT yet verified.
+ * - Unauthenticated users → /login
+ * - Already verified users → /dashboard
+ */
+export default function VerifyEmailLayout() {
   const { isAuthenticated, isEmailVerified, isProfileLoading } = useAuth();
 
   if (isProfileLoading) {
@@ -18,15 +22,9 @@ export default function Layout() {
     return <Navigate to="/login" replace />;
   }
 
-  if (!isEmailVerified) {
-    return <Navigate to="/verify-email" replace />;
+  if (isEmailVerified) {
+    return <Navigate to="/dashboard" replace />;
   }
 
-  return (
-    <>
-      <Header />
-      <Outlet />
-      <Footer />
-    </>
-  );
+  return <Outlet />;
 }

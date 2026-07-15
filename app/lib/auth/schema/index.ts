@@ -12,5 +12,10 @@ export const signUpSchema = z.object({
   password: z.string().min(8),
 });
 
+export const verifyEmailSchema = z.object({
+  token: z.string().min(1, "Token is required"),
+});
+
 export type LoginInput = z.infer<typeof loginSchema>;
 export type SignUpInput = z.infer<typeof signUpSchema>;
+export type VerifyEmailDataInput = z.infer<typeof verifyEmailSchema>;

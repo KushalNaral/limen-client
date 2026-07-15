@@ -1,24 +1,15 @@
 import { auth, type LoginInput, type SignUpInputData } from "@/lib/auth";
-import {
-  useMutation,
-  useQuery,
-  type UseQueryResult,
-} from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
-import { authAPI } from "@/api/endpoints/auth";
 import { useAuth } from "@/api/hooks/auth/use-auth";
-
-export const keys = {
-  profile: ["me"],
-};
+import type { VerifyEmailDataInput } from "@/lib/auth";
 
 export const useSignUpMutation = () => {
   const navigate = useNavigate();
   return useMutation({
     mutationFn: (data: SignUpInputData) => auth.signUp.credential(data),
     onSuccess: (session) => {
-      console.log(session);
       toast.success("New registration has been created.");
       navigate("/login", {
         state: {
@@ -49,9 +40,33 @@ export const useLogin = () => {
   });
 };
 
-export const useProfile = (): UseQueryResult<any, Error> => {
-  return useQuery({
-    queryKey: keys.profile,
-    queryFn: ({ signal }) => authAPI.profile(signal),
+export const useVerifyEmail = () => {
+  return useMutation({
+    mutationFn: () => auth.requestEmailVerification(),
+    onSuccess: () => {
+      toast.success("Email Verification sent successfully");
+    },
+    onError: (err) => {
+      console.error(err);
+      toast.warning("error sending verification email: " + err.message);
+    },
+  });
+};
+
+export const useVerifyEmailToken = () => {
+  const { refreshProfile } = useAuth();
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: (data: VerifyEmailDataInput) => auth.verifyEmail({ token: data.token }),
+    onSuccess: async () => {
+      await refreshProfile();
+      toast.success("Email successfully verified.");
+      navigate("/dashboard");
+    },
+    onError: (err) => {
+      console.error(err);
+      toast.error("Failed to verify email. Invalid or expired token.");
+    },
   });
 };

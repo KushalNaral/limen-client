@@ -5,6 +5,11 @@ export interface SignUpInputData {
   lastname: string;
 }
 
+export interface VerifyEmailData {
+  email: string;
+  token: string;
+}
+
 export interface CreatedUser {
   createdAt: string;
   email: string;
@@ -17,9 +22,9 @@ export interface CreatedUser {
 export type User = {
   id: string;
   email: string;
-  emailVerifiedAt: string | undefined;
-  firstName?: string | undefined;
-  lastName?: string | undefined;
+  emailVerifiedAt: string | null | undefined;
+  firstName?: string | null | undefined;
+  lastName?: string | null | undefined;
 };
 
 export type Session = {

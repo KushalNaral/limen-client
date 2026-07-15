@@ -3,5 +3,5 @@ import type { ProfileResponse } from "@/api/types";
 
 export const authAPI = {
   profile: (signal?: AbortSignal) =>
-    apiClient.get<ProfileResponse>("/me", signal),
+    apiClient.get<ProfileResponse>("/v1/auth/me", signal),
 };
